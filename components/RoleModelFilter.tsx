@@ -1,40 +1,40 @@
 "use client";
 
-import { COUNTRIES, COUNTRY_INFO } from "@/lib/data";
+import type { CityRow } from "@/lib/supabase";
 import { PURPOSE_LABEL, type RoleModel } from "@/lib/rolemodels";
 
 type Props = {
-  selectedCountry: string;
+  cities: Pick<CityRow, "slug" | "name_ja" | "emoji">[];
+  selectedSlug: string;
   selectedPurpose: string;
-  onCountryChange: (v: string) => void;
+  onSlugChange: (v: string) => void;
   onPurposeChange: (v: string) => void;
 };
 
 const PURPOSES = Object.keys(PURPOSE_LABEL) as RoleModel["purpose"][];
 
 export default function RoleModelFilter({
-  selectedCountry,
+  cities,
+  selectedSlug,
   selectedPurpose,
-  onCountryChange,
+  onSlugChange,
   onPurposeChange,
 }: Props) {
   return (
     <div className="flex flex-wrap gap-3 mb-6">
-      {/* 国フィルター */}
       <select
-        value={selectedCountry}
-        onChange={(e) => onCountryChange(e.target.value)}
+        value={selectedSlug}
+        onChange={(e) => onSlugChange(e.target.value)}
         className="text-sm border border-gray-200 rounded-xl px-4 py-2 bg-white text-gray-700 focus:outline-none focus:border-indigo-400"
       >
         <option value="">🌍 すべての国</option>
-        {COUNTRIES.map((c) => (
-          <option key={c} value={c}>
-            {COUNTRY_INFO[c].emoji} {c}
+        {cities.map((c) => (
+          <option key={c.slug} value={c.slug}>
+            {c.emoji} {c.name_ja}
           </option>
         ))}
       </select>
 
-      {/* 目的フィルター */}
       <select
         value={selectedPurpose}
         onChange={(e) => onPurposeChange(e.target.value)}

@@ -329,6 +329,25 @@ export const SCORES: Record<string, Record<Country, Record<string, number>>> = {
   },
 };
 
+// 国名（日本語）→ Supabase slug マッピング
+export const COUNTRY_SLUG: Record<Country, string> = {
+  オーストラリア: "australia",
+  カナダ: "canada",
+  アメリカ: "usa",
+  イギリス: "uk",
+  ニュージーランド: "new-zealand",
+  シンガポール: "singapore",
+  ドイツ: "germany",
+  フランス: "france",
+  台湾: "taiwan",
+  タイ: "thailand",
+  アイルランド: "ireland",
+  オランダ: "netherlands",
+  韓国: "korea",
+  ポルトガル: "portugal",
+  UAE: "uae",
+};
+
 // 重み付けの対応マップ（Q10の選択肢 → 対応するスコアキー）
 export const PRIORITY_MAP: Record<string, string> = {
   budget: "budget",

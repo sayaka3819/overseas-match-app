@@ -2,23 +2,29 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ROLE_MODELS } from "@/lib/rolemodels";
+import type { RoleModelRow, CityRow } from "@/lib/supabase";
 import RoleModelCard from "@/components/RoleModelCard";
 import RoleModelFilter from "@/components/RoleModelFilter";
 
-export default function RoleModelsClient() {
-  const [selectedCountry, setSelectedCountry] = useState("");
+type Props = {
+  roleModels: RoleModelRow[];
+  citiesBySlug: Record<string, CityRow>;
+};
+
+export default function RoleModelsClient({ roleModels, citiesBySlug }: Props) {
+  const [selectedSlug, setSelectedSlug] = useState("");
   const [selectedPurpose, setSelectedPurpose] = useState("");
 
-  const filtered = ROLE_MODELS.filter((m) => {
-    if (selectedCountry && m.country !== selectedCountry) return false;
+  const filtered = roleModels.filter((m) => {
+    if (selectedSlug && m.country_slug !== selectedSlug) return false;
     if (selectedPurpose && m.purpose !== selectedPurpose) return false;
     return true;
   });
 
+  const cities = Object.values(citiesBySlug);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-orange-50">
-      {/* ナビ */}
       <header className="flex justify-between items-center px-6 py-4 max-w-3xl mx-auto">
         <Link href="/" className="font-black text-lg text-indigo-600">🌍 MatchMove</Link>
         <Link
@@ -30,7 +36,6 @@ export default function RoleModelsClient() {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        {/* タイトル */}
         <div className="mb-8">
           <h1 className="text-3xl font-black text-gray-900 mb-2">
             🌏 ロールモデルを探す
@@ -40,18 +45,16 @@ export default function RoleModelsClient() {
           </p>
         </div>
 
-        {/* フィルター */}
         <RoleModelFilter
-          selectedCountry={selectedCountry}
+          cities={cities}
+          selectedSlug={selectedSlug}
           selectedPurpose={selectedPurpose}
-          onCountryChange={setSelectedCountry}
+          onSlugChange={setSelectedSlug}
           onPurposeChange={setSelectedPurpose}
         />
 
-        {/* 件数 */}
         <p className="text-xs text-gray-400 mb-4">{filtered.length}件表示中</p>
 
-        {/* カード一覧 */}
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-4xl mb-3">🔍</p>
@@ -60,7 +63,11 @@ export default function RoleModelsClient() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filtered.map((model) => (
-              <RoleModelCard key={model.id} model={model} />
+              <RoleModelCard
+                key={model.id}
+                model={model}
+                city={citiesBySlug[model.country_slug]}
+              />
             ))}
           </div>
         )}

@@ -1,25 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { COUNTRIES, type Country } from "@/lib/data";
 import { SCORES } from "@/lib/data";
+import type { CityRow } from "@/lib/supabase";
 import CountryCard from "@/components/CountryCard";
 import CountryFilter from "@/components/CountryFilter";
 
 const SCORE_THRESHOLD = 2;
 
-function filterCountries(filters: Record<string, string>): Country[] {
-  return COUNTRIES.filter((country) => {
+function filterCities(cities: CityRow[], filters: Record<string, string>): CityRow[] {
+  return cities.filter((city) => {
     for (const [key, value] of Object.entries(filters)) {
       if (!value) continue;
-      const score = SCORES[key]?.[country]?.[value] ?? 0;
+      const score = (SCORES[key] as Record<string, Record<string, number>>)?.[city.name_ja]?.[value] ?? 0;
       if (score < SCORE_THRESHOLD) return false;
     }
     return true;
   });
 }
 
-export default function CountriesClient() {
+export default function CountriesClient({ cities }: { cities: CityRow[] }) {
   const [filters, setFilters] = useState({
     purpose: "",
     budget: "",
@@ -31,7 +31,7 @@ export default function CountriesClient() {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
 
-  const filtered = filterCountries(filters);
+  const filtered = filterCities(cities, filters);
 
   return (
     <div>
@@ -50,8 +50,8 @@ export default function CountriesClient() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {filtered.map((country) => (
-            <CountryCard key={country} country={country} />
+          {filtered.map((city) => (
+            <CountryCard key={city.slug} city={city} />
           ))}
         </div>
       )}

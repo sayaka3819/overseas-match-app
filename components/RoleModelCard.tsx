@@ -1,10 +1,12 @@
-import type { RoleModel } from "@/lib/rolemodels";
+import type { RoleModelRow, CityRow } from "@/lib/supabase";
 import { PURPOSE_LABEL } from "@/lib/rolemodels";
-import { COUNTRY_INFO } from "@/lib/data";
 
-export default function RoleModelCard({ model }: { model: RoleModel }) {
-  const info = COUNTRY_INFO[model.country];
+type Props = {
+  model: RoleModelRow;
+  city?: CityRow;
+};
 
+export default function RoleModelCard({ model, city }: Props) {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
       <div className="flex items-center gap-3">
@@ -19,7 +21,7 @@ export default function RoleModelCard({ model }: { model: RoleModel }) {
 
       <div className="flex flex-wrap gap-2">
         <span className="text-xs bg-indigo-50 text-indigo-600 font-medium px-3 py-1 rounded-full">
-          {info.emoji} {model.country}
+          {city?.emoji} {city?.name_ja ?? model.country_slug}
         </span>
         <span className="text-xs bg-orange-50 text-orange-600 font-medium px-3 py-1 rounded-full">
           {PURPOSE_LABEL[model.purpose]}

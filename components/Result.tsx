@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { calculateScores, type Answers } from "@/lib/scoring";
-import { COUNTRY_INFO } from "@/lib/data";
+import { COUNTRY_INFO, COUNTRY_SLUG } from "@/lib/data";
 import { generateDiagnosis } from "@/lib/diagnosis";
+import { supabase } from "@/lib/supabase";
 
 export default function Result({ answers }: { answers: Answers }) {
   const router = useRouter();
@@ -15,6 +16,21 @@ export default function Result({ answers }: { answers: Answers }) {
     const { type, reason } = generateDiagnosis(answers, top1.country);
     return { scores, type, reason };
   }, [answers]);
+
+  useEffect(() => {
+    const sessionId = crypto.randomUUID();
+    const scoresObj = Object.fromEntries(scores.map((s) => [s.country, s.score]));
+    supabase.from("responses").insert({
+      session_id: sessionId,
+      answers,
+      scores: scoresObj,
+      top_country_slug: COUNTRY_SLUG[scores[0].country],
+      completed: true,
+      ua: navigator.userAgent,
+    }).then(({ error }) => {
+      if (error) console.error("Supabase insert error:", error);
+    });
+  }, []);
 
   const top1 = scores[0];
   const rest = scores.slice(1, 5);

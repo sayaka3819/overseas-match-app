@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { supabase, type CityRow } from "@/lib/supabase";
 import CountriesClient from "./CountriesClient";
 
-export default function CountriesPage() {
+export default async function CountriesPage() {
+  const { data: cities } = await supabase
+    .from("cities")
+    .select("*")
+    .eq("is_active", true)
+    .order("name_ja");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-orange-50">
       <header className="flex justify-between items-center px-6 py-4 max-w-3xl mx-auto">
@@ -19,7 +26,7 @@ export default function CountriesPage() {
           <h1 className="text-3xl font-black text-gray-900 mb-2">🗺️ 国を調べる</h1>
           <p className="text-gray-500 text-sm">条件で絞り込んで、気になる国の詳細を確認しよう。</p>
         </div>
-        <CountriesClient />
+        <CountriesClient cities={(cities ?? []) as CityRow[]} />
       </main>
     </div>
   );
